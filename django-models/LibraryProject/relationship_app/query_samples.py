@@ -1,6 +1,6 @@
 from .models import Author, Book, Library
 
-author = Author.objects.get(id=1)
+author = Author.objects.get(name=author_name)
 author.books.all()
 
 library = Library.objects.get(name=library_name)

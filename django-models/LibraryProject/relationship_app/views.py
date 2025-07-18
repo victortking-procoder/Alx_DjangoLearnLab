@@ -21,6 +21,10 @@ class LibraryDetailView(DetailView, TemplateView):
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
+
+def register(request):
+    pass
+
 class UserRegistration(CreateView):
     form_class = UserCreationForm
     template_name = 'relationship_app/register.html'

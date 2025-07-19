@@ -58,3 +58,8 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
+
+class AdminView(RoleRequiredMixin, TemplateView):
+    template_name = 'relationship_app/admin_view.html'
+    required_role = 'Admin'

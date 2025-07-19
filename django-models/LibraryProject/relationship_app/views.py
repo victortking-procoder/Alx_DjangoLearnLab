@@ -60,6 +60,6 @@ def member_view(request):
     return render(request, 'relationship_app/member_view.html')
 
 
-class AdminView(RoleRequiredMixin, TemplateView):
+class Admin(RoleRequiredMixin, TemplateView):
     template_name = 'relationship_app/admin_view.html'
     required_role = 'Admin'

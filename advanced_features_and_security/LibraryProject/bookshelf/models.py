@@ -82,23 +82,23 @@ class CustomUser(AbstractUser):
     def __str__(self):
         # Depending on your USERNAME_FIELD, you might return email or username
         return self.username # Or self.email if USERNAME_FIELD is 'email'
+    
+    class Book(models.Model):
+        title = models.CharField(max_length=255)
+        author_name = models.CharField(max_length=255)
+        publication_date = models.DateField(null=True, blank=True)
+        isbn = models.CharField(max_length=13, unique=True, null=True, blank=True)
+        added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
+        class Meta:
+            verbose_name = "Book"
+            verbose_name_plural = "Books"
+            permissions = [
+                ("can_view", "Can view books"),       # Changed from can_view_book
+                ("can_create", "Can add new books"),  # Changed from can_add_book
+                ("can_edit", "Can edit book information"), # Changed from can_edit_book
+                ("can_delete", "Can delete books"),   # Changed from can_delete_book
+            ]
 
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Post"
-        verbose_name_plural = "Posts"
-        permissions = [
-            ("can_view", "Can view posts"),
-            ("can_create", "Can create posts"),
-            ("can_edit", "Can edit posts"),
-            ("can_delete", "Can delete posts"),
-        ]
-
-    def __str__(self):
-        return self.title
+        def __str__(self):
+            return self.title

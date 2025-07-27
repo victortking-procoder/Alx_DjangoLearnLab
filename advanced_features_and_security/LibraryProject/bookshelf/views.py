@@ -1,69 +1,77 @@
-# myapp/views.py
+# LibraryProject/bookshelf/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseForbidden
-from .models import Post
-from .forms import PostForm # We'll create this form next
+from .models import Book
+from .forms import BookForm
 
-# Helper function for a forbidden response - useful with raise_exception=True
+# Helper function for a forbidden response
 def forbidden_view(request):
     return HttpResponseForbidden("<h1>403 Forbidden: You do not have permission to access this page.</h1>")
 
 @login_required
-@permission_required('bookshelf.can_view', raise_exception=True)
-def post_list(request):
+@permission_required('bookshelf.can_view', raise_exception=True) # Changed: 'bookshelf.can_view'
+def book_list(request):
     """
-    Displays a list of all posts. Requires 'myapp.can_view' permission.
+    Displays a list of all books. Requires 'bookshelf.can_view' permission.
     """
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts': posts})
+    books = Book.objects.all()
+    context = {
+        'books': books,
+        'can_add_book': request.user.has_perm('bookshelf.can_create'),  # Changed: 'bookshelf.can_create'
+        'can_edit_book': request.user.has_perm('bookshelf.can_edit'),    # Changed: 'bookshelf.can_edit'
+        'can_delete_book': request.user.has_perm('bookshelf.can_delete'), # Changed: 'bookshelf.can_delete'
+    }
+    return render(request, 'bookshelf/book_list.html', context)
+
 
 @login_required
-@permission_required('bookshelf.can_create', raise_exception=True)
-def post_create(request):
+@permission_required('bookshelf.can_create', raise_exception=True) # Changed: 'bookshelf.can_create'
+def book_add(request):
     """
-    Allows creation of a new post. Requires 'myapp.can_create' permission.
+    Allows adding a new book. Requires 'bookshelf.can_create' permission.
     """
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = BookForm(request.POST)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user # Assign the current logged-in user as author
-            post.save()
-            return redirect('post_list')
+            book = form.save(commit=False)
+            book.added_by = request.user
+            book.save()
+            return redirect('book_list')
     else:
-        form = PostForm()
-    return render(request, 'post_form.html', {'form': form, 'form_type': 'Create'})
+        form = BookForm()
+    return render(request, 'bookshelf/book_form.html', {'form': form, 'form_type': 'Add'})
+
 
 @login_required
-@permission_required('bookshelf.can_edit', raise_exception=True)
-def post_edit(request, pk):
+@permission_required('bookshelf.can_edit', raise_exception=True) # Changed: 'bookshelf.can_edit'
+def book_edit(request, pk):
     """
-    Allows editing an existing post. Requires 'myapp.can_edit' permission.
-    Only the author can edit in this example, but the permission ensures general edit rights.
+    Allows editing an existing book. Requires 'bookshelf.can_edit' permission.
     """
-    post = get_object_or_404(Post, pk=pk)
-    # Optional: Further restrict editing to only the author of the post
-    if post.author != request.user and not request.user.is_superuser:
-        return HttpResponseForbidden("<h1>403 Forbidden: You can only edit your own posts.</h1>")
+    book = get_object_or_404(Book, pk=pk)
+    # Optional: Further restrict editing to only the user who added it or superuser
+    # if book.added_by != request.user and not request.user.is_superuser:
+    #     return HttpResponseForbidden("<h1>403 Forbidden: You can only edit books you added.</h1>")
 
     if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
+        form = BookForm(request.POST, instance=book)
         if form.is_valid():
             form.save()
-            return redirect('post_list')
+            return redirect('book_list')
     else:
-        form = PostForm(instance=post)
-    return render(request, 'post_form.html', {'form': form, 'form_type': 'Edit'})
+        form = BookForm(instance=book)
+    return render(request, 'bookshelf/book_form.html', {'form': form, 'form_type': 'Edit'})
+
 
 @login_required
-@permission_required('bookshelf.can_delete', raise_exception=True)
-def post_delete(request, pk):
+@permission_required('bookshelf.can_delete', raise_exception=True) # Changed: 'bookshelf.can_delete'
+def book_delete(request, pk):
     """
-    Allows deleting a post. Requires 'myapp.can_delete' permission.
+    Allows deleting a book. Requires 'bookshelf.can_delete' permission.
     """
-    post = get_object_or_404(Post, pk=pk)
+    book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
-        post.delete()
-        return redirect('post_list')
-    return render(request, 'post_confirm_delete.html', {'post': post})
+        book.delete()
+        return redirect('book_list')
+    return render(request, 'bookshelf/book_confirm_delete.html', {'book': book})

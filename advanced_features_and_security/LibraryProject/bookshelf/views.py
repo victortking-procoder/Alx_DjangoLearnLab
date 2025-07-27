@@ -5,7 +5,8 @@ from django.http import HttpResponseForbidden
 from django.db.models import Q # For secure search queries
 from django.contrib import messages # For displaying feedback messages
 from .models import Book # Assuming Book model is defined in bookshelf/models.py
-from .forms import BookForm, ExampleForm # Both forms are imported
+from .forms import ExampleForm
+from .forms import BookForm
 
 # --- Helper Function for Forbidden Access ---
 def forbidden_view(request):

@@ -143,3 +143,14 @@ CSP_BASE_URI = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",) # Block all <object>, <embed>, and <applet> elements
 CSP_FRAME_ANCESTORS = ("'self'",) # Prevent framing by other sites (similar to X_FRAME_OPTIONS)
 CSP_FORM_ACTION = ("'self'",) # Only allow forms to submit to the same origin
+
+
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True

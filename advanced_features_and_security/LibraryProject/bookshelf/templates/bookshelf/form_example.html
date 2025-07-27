@@ -1,0 +1,40 @@
+{# LibraryProject/bookshelf/templates/bookshelf/form_example.html #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form div { margin-bottom: 10px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="email"], textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .back-link { margin-top: 20px; display: block; }
+        .messages { list-style: none; padding: 0; margin-bottom: 15px; }
+        .messages li.success { color: green; font-weight: bold; }
+        .errorlist { color: red; list-style-type: none; padding: 0; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Example Form</h1>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %} {# Essential for CSRF protection #}
+        {{ form.as_p }} {# Renders form fields as paragraphs #}
+        <button type="submit">Submit</button>
+    </form>
+
+    <a href="{% url 'book_list' %}" class="back-link">Back to Books List</a>
+</body>
+</html>

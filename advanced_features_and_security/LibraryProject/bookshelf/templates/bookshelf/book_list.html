@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .book-card { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        .book-card h3 { margin-top: 0; }
+        a { text-decoration: none; color: blue; }
+        a:hover { text-decoration: underline; }
+        .actions a { margin-right: 10px; }
+        .navbar { margin-bottom: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .auth-links a { margin-left: 15px; }
+        .search-form { margin-bottom: 20px; display: flex; }
+        .search-form input[type="text"] { flex-grow: 1; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px 0 0 4px; }
+        .search-form button { padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+        .search-form button:hover { background-color: #0056b3; }
+        .messages { list-style: none; padding: 0; margin-bottom: 15px; }
+        .messages li.success { color: green; font-weight: bold; }
+        .messages li.error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>
+            {% if user.is_authenticated %}
+                Hello, {{ user.username }}!
+            {% else %}
+                Welcome, Guest!
+            {% endif %}
+        </div>
+        <div class="auth-links">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h1>Books List</h1>
+
+    {# Search Form #}
+    <div class="search-form">
+        <form method="GET" action="{% url 'book_list' %}">
+            <input type="text" name="q" placeholder="Search by title, author, ISBN..." value="{{ search_query|default:'' }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    {% if can_add_book %}
+        <p><a href="{% url 'book_add' %}">Add New Book</a></p>
+    {% endif %}
+
+    <p><a href="{% url 'example_form' %}">Go to Example Form</a></p>
+
+
+    {% for book in books %}
+        <div class="book-card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author_name }}</p>
+            <p><strong>Added by:</strong> {{ book.added_by.username|default:"N/A" }}</p>
+            <p><strong>Publication Date:</strong> {{ book.publication_date|default:"N/A" }}</p>
+            <p><strong>ISBN:</strong> {{ book.isbn|default:"N/A" }}</p>
+            <div class="actions">
+                {% if can_edit_book %}
+                    <a href="{% url 'book_edit' book.pk %}">Edit</a>
+                {% endif %}
+                {% if can_delete_book %}
+                    <a href="{% url 'book_delete' book.pk %}">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p>No books found.</p>
+    {% endfor %}
+</body>
+</html>

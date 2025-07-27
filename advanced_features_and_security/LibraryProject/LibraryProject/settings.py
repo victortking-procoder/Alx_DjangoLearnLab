@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
-    'relationship_app'
+    'relationship_app',
+    'csp',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'csp.middleware.CSPMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,6 +52,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 ROOT_URLCONF = 'LibraryProject.urls'
 
@@ -124,3 +129,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSP_DEFAULT_SRC = ("'self'",) # Only allow resources from the same origin
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'") # Add 'unsafe-inline' if you have inline JS (try to avoid it)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'") # Add 'unsafe-inline' if you have inline CSS (try to avoid it)
+CSP_IMG_SRC = ("'self'", "data:") # Allow images from self and data URIs
+CSP_FONT_SRC = ("'self'",)
+CSP_CONNECT_SRC = ("'self'",)
+CSP_BASE_URI = ("'self'",)
+CSP_OBJECT_SRC = ("'none'",) # Block all <object>, <embed>, and <applet> elements
+CSP_FRAME_ANCESTORS = ("'self'",) # Prevent framing by other sites (similar to X_FRAME_OPTIONS)
+CSP_FORM_ACTION = ("'self'",) # Only allow forms to submit to the same origin

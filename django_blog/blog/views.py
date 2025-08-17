@@ -124,20 +124,23 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 # Add Comment
-@login_required
-def add_comment(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.author = request.user
-            comment.save()
-            return redirect("post-detail", pk=post.pk)
-    else:
-        form = CommentForm()
-    return redirect("post-detail", pk=post.pk)
+class CommentCreateView(CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs["pk"])
+        form.instance.post = post
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("blog:post-detail", kwargs={"pk": self.kwargs["pk"]})
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("login")
+        return super().dispatch(request, *args, **kwargs)
 
 # Update Comment
 class CommentUpdateView(UpdateView):

@@ -12,6 +12,8 @@ from .models import Post
 from .forms import PostForm
 from .forms import CommentForm
 from .models import Comment
+from taggit.models import Tag
+from django.db.models import Q
 
 # Create your views here.
 
@@ -170,3 +172,29 @@ class CommentDeleteView(DeleteView):
         if comment.author != request.user:
             return redirect("post-detail", pk=comment.post.pk)
         return super().dispatch(request, *args, **kwargs)
+
+
+# List posts by tag
+class TaggedPostListView(ListView):
+    model = Post
+    template_name = "blog/tagged_posts.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        return Post.objects.filter(tags__name__in=[self.kwargs["tag_name"]])
+    
+
+class PostSearchListView(ListView):
+    model = Post
+    template_name = "blog/search_results.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()

@@ -5,7 +5,7 @@ from .models import Comment
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ["title", "content"]  # author is set automatically
+        fields = ["title", "content", "tags"]  # author is set automatically
 
 class CommentForm(forms.ModelForm):
     class Meta:

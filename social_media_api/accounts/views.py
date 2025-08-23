@@ -8,6 +8,7 @@ from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
 User = get_user_model()
 
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -17,7 +18,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        token, _ = Token.objects.get_or_create(user=user)
+        token = Token.objects.get(user=user)
         data = {
             "user": UserSerializer(user, context={"request": request}).data,
             "token": token.key,

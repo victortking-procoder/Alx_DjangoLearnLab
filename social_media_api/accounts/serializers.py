@@ -4,6 +4,13 @@ from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 
+class FollowResponseSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    username = serializers.CharField()
+    followers_count = serializers.IntegerField()
+    following_count = serializers.IntegerField()
+    following = serializers.BooleanField()
+
 class UserSerializer(serializers.ModelSerializer):
     followers_count = serializers.IntegerField(source="followers.count", read_only=True)
     following_count = serializers.IntegerField(source="following.count", read_only=True)

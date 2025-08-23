@@ -4,9 +4,23 @@ from rest_framework.exceptions import PermissionDenied
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
+from rest_framework import generics
 
 User = get_user_model()
 
+class FeedView(generics.ListAPIView):
+    """
+    Returns a paginated feed of posts by users the current user follows.
+    Requires authentication.
+    """
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        # authors that the user follows
+        following_qs = user.following.all()
+        return Post.objects.filter(author__in=following_qs).select_related("author").order_by("-created_at")
 
 class PostViewSet(viewsets.ModelViewSet):
     """

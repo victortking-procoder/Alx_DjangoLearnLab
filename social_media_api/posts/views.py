@@ -16,11 +16,13 @@ class FeedView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        # authors that the user follows
-        following_qs = user.following.all()
-        return Post.objects.filter(author__in=following_qs).select_related("author").order_by("-created_at")
+    def get(self, request):
+        following_users = request.user.following.all()
+
+        posts = Post.objects.filter(author__in=following_users).order_by("-created_at")
+
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data)
 
 class PostViewSet(viewsets.ModelViewSet):
     """

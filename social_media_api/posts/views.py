@@ -16,7 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     - Search: ?search=<query> matches title or content
     - Pagination: global PageNumberPagination
     """
-    queryset = Post.objects.select_related("author").all()
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [filters.SearchFilter]
@@ -35,7 +35,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     - Create/Update/Delete: authenticated + owner-only for edits
     - Filter by post via query param: ?post=<post_id> (basic filter)
     """
-    queryset = Comment.objects.select_related("author", "post").all()
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
